@@ -94,7 +94,7 @@
             "metadata": {
                 "description": "Specifies the URI to the package to deploy"
             },
-            "defaultValue": "https://raw.githubusercontent.com/bilalnordsec/nordpass-azure-sentinel-dev/refs/heads/v2/Solutions/NordPass/Data%20Connectors/function.zip"
+            "defaultValue": "https://raw.githubusercontent.com/bilalnordsec/nordpass-azure-sentinel-dev/refs/heads/staging/Solutions/NordPass/Data%20Connectors/function.zip"
         }
     },
     "variables": {
