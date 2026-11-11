@@ -1,0 +1,1581 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "author": "Nord Security Inc.",
+    "comments": "Solution template for NordPass"
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Not used, but needed to pass arm-ttk test `Location-Should-Not-Be-Hardcoded`.  We instead use the `workspace-location` which is derived from the LA workspace"
+      }
+    },
+    "workspace-location": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "[concat('Region to deploy solution resources -- separate from location selection',parameters('location'))]"
+      }
+    },
+    "workspace": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "Workspace name for Log Analytics where Microsoft Sentinel is setup"
+      }
+    }
+  },
+  "variables": {
+    "_solutionName": "NordPass",
+    "_solutionVersion": "3.1.0",
+    "solutionId": "nordsecurityinc.azure-sentinel-solution-nordpass",
+    "_solutionId": "[variables('solutionId')]",
+    "uiConfigId1": "NordPass",
+    "_uiConfigId1": "[variables('uiConfigId1')]",
+    "dataConnectorContentId1": "NordPass",
+    "_dataConnectorContentId1": "[variables('dataConnectorContentId1')]",
+    "dataConnectorId1": "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/dataConnectors', variables('_dataConnectorContentId1'))]",
+    "_dataConnectorId1": "[variables('dataConnectorId1')]",
+    "dataConnectorTemplateSpecName1": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-dc-',uniquestring(variables('_dataConnectorContentId1'))))]",
+    "dataConnectorVersion1": "2.0.0",
+    "_dataConnectorcontentProductId1": "[concat(take(variables('_solutionId'),50),'-','dc','-', uniqueString(concat(variables('_solutionId'),'-','DataConnector','-',variables('_dataConnectorContentId1'),'-', variables('dataConnectorVersion1'))))]",
+    "parserObject1": {
+      "_parserName1": "[concat(parameters('workspace'),'/','NordPassActivities')]",
+      "_parserId1": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspace'), 'NordPassActivities')]",
+      "parserTemplateSpecName1": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-pr-',uniquestring('NordPassActivities-Parser')))]",
+      "parserVersion1": "1.0.0",
+      "parserContentId1": "NordPassActivities-Parser"
+    },
+    "analyticRuleObject1": {
+      "analyticRuleVersion1": "1.1.0",
+      "_analyticRulecontentId1": "e3f2b6c9-df0c-4b36-a376-bb2762e4dbdc",
+      "analyticRuleId1": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', 'e3f2b6c9-df0c-4b36-a376-bb2762e4dbdc')]",
+      "analyticRuleTemplateSpecName1": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('e3f2b6c9-df0c-4b36-a376-bb2762e4dbdc')))]",
+      "_analyticRulecontentProductId1": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','e3f2b6c9-df0c-4b36-a376-bb2762e4dbdc','-', '1.1.0')))]"
+    },
+    "analyticRuleObject2": {
+      "analyticRuleVersion2": "1.1.0",
+      "_analyticRulecontentId2": "283d7506-f3c6-419a-ae9c-d9afe6a15d6d",
+      "analyticRuleId2": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', '283d7506-f3c6-419a-ae9c-d9afe6a15d6d')]",
+      "analyticRuleTemplateSpecName2": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('283d7506-f3c6-419a-ae9c-d9afe6a15d6d')))]",
+      "_analyticRulecontentProductId2": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','283d7506-f3c6-419a-ae9c-d9afe6a15d6d','-', '1.1.0')))]"
+    },
+    "analyticRuleObject3": {
+      "analyticRuleVersion3": "1.1.0",
+      "_analyticRulecontentId3": "f72f630f-c890-49fe-b747-80f4fb3b6348",
+      "analyticRuleId3": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', 'f72f630f-c890-49fe-b747-80f4fb3b6348')]",
+      "analyticRuleTemplateSpecName3": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('f72f630f-c890-49fe-b747-80f4fb3b6348')))]",
+      "_analyticRulecontentProductId3": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','f72f630f-c890-49fe-b747-80f4fb3b6348','-', '1.1.0')))]"
+    },
+    "analyticRuleObject4": {
+      "analyticRuleVersion4": "1.1.0",
+      "_analyticRulecontentId4": "0068dca4-dea0-46a3-a970-655e067a145f",
+      "analyticRuleId4": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', '0068dca4-dea0-46a3-a970-655e067a145f')]",
+      "analyticRuleTemplateSpecName4": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('0068dca4-dea0-46a3-a970-655e067a145f')))]",
+      "_analyticRulecontentProductId4": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','0068dca4-dea0-46a3-a970-655e067a145f','-', '1.1.0')))]"
+    },
+    "analyticRuleObject5": {
+      "analyticRuleVersion5": "1.1.0",
+      "_analyticRulecontentId5": "693c5217-e840-427f-9661-3fa0ef266040",
+      "analyticRuleId5": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', '693c5217-e840-427f-9661-3fa0ef266040')]",
+      "analyticRuleTemplateSpecName5": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('693c5217-e840-427f-9661-3fa0ef266040')))]",
+      "_analyticRulecontentProductId5": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','693c5217-e840-427f-9661-3fa0ef266040','-', '1.1.0')))]"
+    },
+    "analyticRuleObject6": {
+      "analyticRuleVersion6": "1.1.0",
+      "_analyticRulecontentId6": "800314a6-759a-4575-93e2-1e080b1d33f9",
+      "analyticRuleId6": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', '800314a6-759a-4575-93e2-1e080b1d33f9')]",
+      "analyticRuleTemplateSpecName6": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('800314a6-759a-4575-93e2-1e080b1d33f9')))]",
+      "_analyticRulecontentProductId6": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','800314a6-759a-4575-93e2-1e080b1d33f9','-', '1.1.0')))]"
+    },
+    "analyticRuleObject7": {
+      "analyticRuleVersion7": "1.1.0",
+      "_analyticRulecontentId7": "c4d2eb42-a4ab-4db6-a270-3d2ed7e057a0",
+      "analyticRuleId7": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', 'c4d2eb42-a4ab-4db6-a270-3d2ed7e057a0')]",
+      "analyticRuleTemplateSpecName7": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('c4d2eb42-a4ab-4db6-a270-3d2ed7e057a0')))]",
+      "_analyticRulecontentProductId7": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','c4d2eb42-a4ab-4db6-a270-3d2ed7e057a0','-', '1.1.0')))]"
+    },
+    "analyticRuleObject8": {
+      "analyticRuleVersion8": "1.1.0",
+      "_analyticRulecontentId8": "27b261dc-68f3-489a-944f-bc252e0c1960",
+      "analyticRuleId8": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', '27b261dc-68f3-489a-944f-bc252e0c1960')]",
+      "analyticRuleTemplateSpecName8": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('27b261dc-68f3-489a-944f-bc252e0c1960')))]",
+      "_analyticRulecontentProductId8": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','27b261dc-68f3-489a-944f-bc252e0c1960','-', '1.1.0')))]"
+    },
+    "analyticRuleObject9": {
+      "analyticRuleVersion9": "1.1.0",
+      "_analyticRulecontentId9": "c7f14b43-7625-4516-b137-30b7fda65bcf",
+      "analyticRuleId9": "[resourceId('Microsoft.SecurityInsights/AlertRuleTemplates', 'c7f14b43-7625-4516-b137-30b7fda65bcf')]",
+      "analyticRuleTemplateSpecName9": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat(parameters('workspace'),'-ar-',uniquestring('c7f14b43-7625-4516-b137-30b7fda65bcf')))]",
+      "_analyticRulecontentProductId9": "[concat(take(variables('_solutionId'),50),'-','ar','-', uniqueString(concat(variables('_solutionId'),'-','AnalyticsRule','-','c7f14b43-7625-4516-b137-30b7fda65bcf','-', '1.1.0')))]"
+    },
+    "_solutioncontentProductId": "[concat(take(variables('_solutionId'),50),'-','sl','-', uniqueString(concat(variables('_solutionId'),'-','Solution','-',variables('_solutionId'),'-', variables('_solutionVersion'))))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('dataConnectorTemplateSpecName1')]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "NordPass data connector with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('dataConnectorVersion1')]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',variables('_dataConnectorContentId1'))]",
+              "apiVersion": "2021-03-01-preview",
+              "type": "Microsoft.OperationalInsights/workspaces/providers/dataConnectors",
+              "location": "[parameters('workspace-location')]",
+              "kind": "GenericUI",
+              "properties": {
+                "connectorUiConfig": {
+                  "id": "[variables('_uiConfigId1')]",
+                  "title": "NordPass",
+                  "publisher": "NordPass",
+                  "descriptionMarkdown": "Integrating NordPass with Microsoft Sentinel SIEM via the API will allow you to automatically transfer Activity Log data from NordPass to Microsoft Sentinel and get real-time insights, such as item activity, all login attempts, and security notifications.",
+                  "additionalRequirementBanner": "These queries are dependent on a parser based on a Kusto Function deployed as part of the solution.",
+                  "graphQueries": [
+                    {
+                      "metricName": "Total data received",
+                      "legend": "NordPass",
+                      "baseQuery": "NordPassEventLogs_CL"
+                    }
+                  ],
+                  "sampleQueries": [
+                    {
+                      "description": "Top 10 Users",
+                      "query": "NordPassEventLogs_CL\n | summarize count() by user_email \n | top 10 by count_"
+                    }
+                  ],
+                  "dataTypes": [
+                    {
+                      "name": "NordPassEventLogs_CL",
+                      "lastDataReceivedQuery": "NordPassEventLogs_CL\n | summarize Time = max(TimeGenerated)"
+                    }
+                  ],
+                  "connectivityCriterias": [
+                    {
+                      "type": "IsConnectedQuery",
+                      "value": [
+                        "NordPassEventLogs_CL\n | summarize LastLogReceived = max(TimeGenerated)\n | project IsConnected = LastLogReceived > ago(7d)"
+                      ]
+                    }
+                  ],
+                  "availability": {
+                    "status": 1,
+                    "isPreview": false
+                  },
+                  "permissions": {
+                    "resourceProvider": [
+                      {
+                        "provider": "Microsoft.OperationalInsights/workspaces",
+                        "permissionsDisplayText": "read and write permissions on the workspace are required.",
+                        "providerDisplayName": "Workspace",
+                        "scope": "Workspace",
+                        "requiredPermissions": {
+                          "write": true,
+                          "read": true,
+                          "delete": true
+                        }
+                      }
+                    ],
+                    "customs": [
+                      {
+                        "description": "Ensure that the [resource group](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups) and the [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal) are created and located in the same region so you can deploy the Azure Functions."
+                      },
+                      {
+                        "description": "[Add Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/quickstart-onboard#enable-microsoft-sentinel-) to the created Log Analytics workspace."
+                      },
+                      {
+                        "description": "Generate a [Microsoft Sentinel API URL and token](https://www.google.com/url?q=https://support.nordpass.com/hc/en-us/articles/31972037289873&sa=D&source=docs&ust=1743770997230005&usg=AOvVaw16p0hstJ6OeBBoFdBKZRfr) in the NordPass Admin Panel to finish the Azure Functions integration. Please note that you’ll need the NordPass Enterprise account for that."
+                      },
+                      {
+                        "description": "**Important:** This connector uses Azure Functions to retrieve Activity Logs from NordPass into Microsoft Sentinel. This may result in additional data ingestion costs. For more information, refer to the Azure Functions pricing page."
+                      }
+                    ]
+                  },
+                  "instructionSteps": [
+                    {
+                      "description": "To proceed with the Microsoft Sentinel setup\n\n1. Click the **Deploy to Azure** button below. \n\n\t[![Deploy To Azure](https://aka.ms/deploytoazurebutton)](https://aka.ms/sentinel-Nordpass-azuredeploy)\n2. **Please note that after the successful deployment, the system pulls Activity Log data every 1 minute by default.**"
+                    }
+                  ],
+                  "metadata": {
+                    "id": "2ed97316-15c0-4439-a620-4bafbfc8f9c3",
+                    "version": "2.0.0",
+                    "kind": "dataConnector",
+                    "source": {
+                      "kind": "solution",
+                      "name": "NordPass"
+                    },
+                    "author": {
+                      "name": "Nord Security Inc."
+                    },
+                    "support": {
+                      "name": "NordPass",
+                      "tier": "Partner",
+                      "link": "https://support.nordpass.com/"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2023-04-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('DataConnector-', last(split(variables('_dataConnectorId1'),'/'))))]",
+              "properties": {
+                "parentId": "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/dataConnectors', variables('_dataConnectorContentId1'))]",
+                "contentId": "[variables('_dataConnectorContentId1')]",
+                "kind": "DataConnector",
+                "version": "[variables('dataConnectorVersion1')]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('_dataConnectorContentId1')]",
+        "contentKind": "DataConnector",
+        "displayName": "NordPass",
+        "contentProductId": "[variables('_dataConnectorcontentProductId1')]",
+        "id": "[variables('_dataConnectorcontentProductId1')]",
+        "version": "[variables('dataConnectorVersion1')]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('DataConnector-', last(split(variables('_dataConnectorId1'),'/'))))]",
+      "dependsOn": [
+        "[variables('_dataConnectorId1')]"
+      ],
+      "location": "[parameters('workspace-location')]",
+      "properties": {
+        "parentId": "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/dataConnectors', variables('_dataConnectorContentId1'))]",
+        "contentId": "[variables('_dataConnectorContentId1')]",
+        "kind": "DataConnector",
+        "version": "[variables('dataConnectorVersion1')]",
+        "source": {
+          "kind": "Solution",
+          "name": "NordPass",
+          "sourceId": "[variables('_solutionId')]"
+        },
+        "author": {
+          "name": "Nord Security Inc."
+        },
+        "support": {
+          "name": "NordPass",
+          "tier": "Partner",
+          "link": "https://support.nordpass.com/"
+        }
+      }
+    },
+    {
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',variables('_dataConnectorContentId1'))]",
+      "apiVersion": "2021-03-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/dataConnectors",
+      "location": "[parameters('workspace-location')]",
+      "kind": "GenericUI",
+      "properties": {
+        "connectorUiConfig": {
+          "title": "NordPass",
+          "publisher": "NordPass",
+          "descriptionMarkdown": "Integrating NordPass with Microsoft Sentinel SIEM via the API will allow you to automatically transfer Activity Log data from NordPass to Microsoft Sentinel and get real-time insights, such as item activity, all login attempts, and security notifications.",
+          "graphQueries": [
+            {
+              "metricName": "Total data received",
+              "legend": "NordPass",
+              "baseQuery": "NordPassEventLogs_CL"
+            }
+          ],
+          "dataTypes": [
+            {
+              "name": "NordPassEventLogs_CL",
+              "lastDataReceivedQuery": "NordPassEventLogs_CL\n | summarize Time = max(TimeGenerated)"
+            }
+          ],
+          "connectivityCriterias": [
+            {
+              "type": "IsConnectedQuery",
+              "value": [
+                "NordPassEventLogs_CL\n | summarize LastLogReceived = max(TimeGenerated)\n | project IsConnected = LastLogReceived > ago(7d)"
+              ]
+            }
+          ],
+          "sampleQueries": [
+            {
+              "description": "Top 10 Users",
+              "query": "NordPassEventLogs_CL\n | summarize count() by user_email \n | top 10 by count_"
+            }
+          ],
+          "availability": {
+            "status": 1,
+            "isPreview": false
+          },
+          "permissions": {
+            "resourceProvider": [
+              {
+                "provider": "Microsoft.OperationalInsights/workspaces",
+                "permissionsDisplayText": "read and write permissions on the workspace are required.",
+                "providerDisplayName": "Workspace",
+                "scope": "Workspace",
+                "requiredPermissions": {
+                  "write": true,
+                  "read": true,
+                  "delete": true
+                }
+              }
+            ],
+            "customs": [
+              {
+                "description": "Ensure that the [resource group](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#create-resource-groups) and the [Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal) are created and located in the same region so you can deploy the Azure Functions."
+              },
+              {
+                "description": "[Add Microsoft Sentinel](https://learn.microsoft.com/en-us/azure/sentinel/quickstart-onboard#enable-microsoft-sentinel-) to the created Log Analytics workspace."
+              },
+              {
+                "description": "Generate a [Microsoft Sentinel API URL and token](https://www.google.com/url?q=https://support.nordpass.com/hc/en-us/articles/31972037289873&sa=D&source=docs&ust=1743770997230005&usg=AOvVaw16p0hstJ6OeBBoFdBKZRfr) in the NordPass Admin Panel to finish the Azure Functions integration. Please note that you’ll need the NordPass Enterprise account for that."
+              },
+              {
+                "description": "**Important:** This connector uses Azure Functions to retrieve Activity Logs from NordPass into Microsoft Sentinel. This may result in additional data ingestion costs. For more information, refer to the Azure Functions pricing page."
+              }
+            ]
+          },
+          "instructionSteps": [
+            {
+              "description": "To proceed with the Microsoft Sentinel setup\n\n1. Click the **Deploy to Azure** button below. \n\n\t[![Deploy To Azure](https://aka.ms/deploytoazurebutton)](https://aka.ms/sentinel-Nordpass-azuredeploy)\n2. **Please note that after the successful deployment, the system pulls Activity Log data every 1 minute by default.**"
+            }
+          ],
+          "id": "[variables('_uiConfigId1')]",
+          "additionalRequirementBanner": "These queries are dependent on a parser based on a Kusto Function deployed as part of the solution."
+        }
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('parserObject1').parserTemplateSpecName1]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "NordPassActivities Data Parser with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('parserObject1').parserVersion1]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "name": "[variables('parserObject1')._parserName1]",
+              "apiVersion": "2025-07-01",
+              "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "eTag": "*",
+                "displayName": "Parser for NordPass activity logs (NordPassEventLogs_CL)",
+                "category": "Microsoft Sentinel Parser",
+                "functionAlias": "NordPassActivities",
+                "query": "// Normalizes NordPassEventLogs_CL to the Activities API v2 taxonomy.\n// Rows collected before the Activities API v2 upgrade (v1 taxonomy, schema_version empty)\n// are mapped onto v2 type/action names and get category, client_type and ip_address derived,\n// so analytic rules and queries see one schema across old and new data.\n// column_ifexists keeps the parser working on tables that predate the v2 columns.\nlet LoginTypes = dynamic([\"login\", \"lock\", \"password\", \"biometric\", \"recovery_code\"]);\nlet VaultTypes = dynamic([\"item_actions\", \"item_share\", \"generated_password\", \"email_mask\", \"identity_mask\", \"redeem\", \"password_health\"]);\nlet AdminTypes = dynamic([\"invites\", \"roles\", \"access\", \"settings\", \"oauth_token_management\", \"oauth_credentials\", \"oauth_domain\",\n                          \"scim_credentials\", \"group_provisioning\", \"groups\", \"domain\", \"integrations\", \"organization\", \"ip_rules\",\n                          \"checkout\", \"consents\", \"breach\", \"security_key\", \"totp\", \"mfa_backup_codes\", \"sharing_hub\"]);\nlet VaultTotpActions = dynamic([\"2fa_item_accessed\", \"2fa_added_to_item\", \"2fa_removed_from_item\", \"2fa_item_created\", \"2fa_device_enrolled\", \"2fa_device_deleted\"]);\nNordPassEventLogs_CL\n| extend\n    schema_version = toint(column_ifexists(\"schema_version\", int(null))),\n    category = tostring(column_ifexists(\"category\", \"\")),\n    client_type = tostring(column_ifexists(\"client_type\", \"\")),\n    mode = tostring(column_ifexists(\"mode\", \"\")),\n    device = todynamic(column_ifexists(\"device\", dynamic(null))),\n    application = todynamic(column_ifexists(\"application\", dynamic(null))),\n    ip_address = tostring(column_ifexists(\"ip_address\", \"\")),\n    inserted_at = tolong(column_ifexists(\"inserted_at\", long(null)))\n| extend schema_version = coalesce(schema_version, 1)\n| extend is_legacy = schema_version < 2\n| extend event_type = case(\n    is_legacy and event_type in (\"item_access\", \"item_delete\"), \"item_actions\",\n    is_legacy and event_type in (\"global_settings\", \"role_settings\", \"user_settings\"), \"settings\",\n    is_legacy and event_type == \"billing\", \"checkout\",\n    event_type)\n| extend action = case(\n    is_legacy and action in (\"global_settings_updated\", \"role_settings_updated\", \"user_settings_updated\"), \"settings_updated\",\n    is_legacy and action in (\"role_settings_cleared\", \"user_settings_cleared\"), \"settings_cleared\",\n    action)\n| extend\n    client_type = iff(isempty(client_type), tostring(metadata.platform), client_type),\n    ip_address = iff(isempty(ip_address), coalesce(tostring(metadata.ip_address), tostring(device.ip_address)), ip_address)\n| extend category = case(\n    isnotempty(category), category,\n    event_type in (LoginTypes), \"login\",\n    event_type in (VaultTypes), \"vault\",\n    event_type == \"breach\" and action in (\"email_breached\", \"credit_card_breached\"), \"vault\",\n    event_type == \"consents\" and action startswith \"user_\", \"vault\",\n    event_type == \"totp\" and action in (VaultTotpActions), \"vault\",\n    event_type in (AdminTypes), \"admin\",\n    \"\")\n| extend EventTime = unixtime_seconds_todatetime(timestamp)\n| project-away is_legacy\n",
+                "functionParameters": "",
+                "version": 2,
+                "tags": [
+                  {
+                    "name": "description",
+                    "value": ""
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('Parser-', last(split(variables('parserObject1')._parserId1,'/'))))]",
+              "dependsOn": [
+                "[variables('parserObject1')._parserId1]"
+              ],
+              "properties": {
+                "parentId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspace'), 'NordPassActivities')]",
+                "contentId": "[variables('parserObject1').parserContentId1]",
+                "kind": "Parser",
+                "version": "[variables('parserObject1').parserVersion1]",
+                "source": {
+                  "name": "NordPass",
+                  "kind": "Solution",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('parserObject1').parserContentId1]",
+        "contentKind": "Parser",
+        "displayName": "Parser for NordPass activity logs (NordPassEventLogs_CL)",
+        "contentProductId": "[concat(take(variables('_solutionId'),50),'-','pr','-', uniqueString(concat(variables('_solutionId'),'-','Parser','-',variables('parserObject1').parserContentId1,'-', '1.0.0')))]",
+        "id": "[concat(take(variables('_solutionId'),50),'-','pr','-', uniqueString(concat(variables('_solutionId'),'-','Parser','-',variables('parserObject1').parserContentId1,'-', '1.0.0')))]",
+        "version": "[variables('parserObject1').parserVersion1]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "apiVersion": "2025-07-01",
+      "name": "[variables('parserObject1')._parserName1]",
+      "location": "[parameters('workspace-location')]",
+      "properties": {
+        "eTag": "*",
+        "displayName": "Parser for NordPass activity logs (NordPassEventLogs_CL)",
+        "category": "Microsoft Sentinel Parser",
+        "functionAlias": "NordPassActivities",
+        "query": "// Normalizes NordPassEventLogs_CL to the Activities API v2 taxonomy.\n// Rows collected before the Activities API v2 upgrade (v1 taxonomy, schema_version empty)\n// are mapped onto v2 type/action names and get category, client_type and ip_address derived,\n// so analytic rules and queries see one schema across old and new data.\n// column_ifexists keeps the parser working on tables that predate the v2 columns.\nlet LoginTypes = dynamic([\"login\", \"lock\", \"password\", \"biometric\", \"recovery_code\"]);\nlet VaultTypes = dynamic([\"item_actions\", \"item_share\", \"generated_password\", \"email_mask\", \"identity_mask\", \"redeem\", \"password_health\"]);\nlet AdminTypes = dynamic([\"invites\", \"roles\", \"access\", \"settings\", \"oauth_token_management\", \"oauth_credentials\", \"oauth_domain\",\n                          \"scim_credentials\", \"group_provisioning\", \"groups\", \"domain\", \"integrations\", \"organization\", \"ip_rules\",\n                          \"checkout\", \"consents\", \"breach\", \"security_key\", \"totp\", \"mfa_backup_codes\", \"sharing_hub\"]);\nlet VaultTotpActions = dynamic([\"2fa_item_accessed\", \"2fa_added_to_item\", \"2fa_removed_from_item\", \"2fa_item_created\", \"2fa_device_enrolled\", \"2fa_device_deleted\"]);\nNordPassEventLogs_CL\n| extend\n    schema_version = toint(column_ifexists(\"schema_version\", int(null))),\n    category = tostring(column_ifexists(\"category\", \"\")),\n    client_type = tostring(column_ifexists(\"client_type\", \"\")),\n    mode = tostring(column_ifexists(\"mode\", \"\")),\n    device = todynamic(column_ifexists(\"device\", dynamic(null))),\n    application = todynamic(column_ifexists(\"application\", dynamic(null))),\n    ip_address = tostring(column_ifexists(\"ip_address\", \"\")),\n    inserted_at = tolong(column_ifexists(\"inserted_at\", long(null)))\n| extend schema_version = coalesce(schema_version, 1)\n| extend is_legacy = schema_version < 2\n| extend event_type = case(\n    is_legacy and event_type in (\"item_access\", \"item_delete\"), \"item_actions\",\n    is_legacy and event_type in (\"global_settings\", \"role_settings\", \"user_settings\"), \"settings\",\n    is_legacy and event_type == \"billing\", \"checkout\",\n    event_type)\n| extend action = case(\n    is_legacy and action in (\"global_settings_updated\", \"role_settings_updated\", \"user_settings_updated\"), \"settings_updated\",\n    is_legacy and action in (\"role_settings_cleared\", \"user_settings_cleared\"), \"settings_cleared\",\n    action)\n| extend\n    client_type = iff(isempty(client_type), tostring(metadata.platform), client_type),\n    ip_address = iff(isempty(ip_address), coalesce(tostring(metadata.ip_address), tostring(device.ip_address)), ip_address)\n| extend category = case(\n    isnotempty(category), category,\n    event_type in (LoginTypes), \"login\",\n    event_type in (VaultTypes), \"vault\",\n    event_type == \"breach\" and action in (\"email_breached\", \"credit_card_breached\"), \"vault\",\n    event_type == \"consents\" and action startswith \"user_\", \"vault\",\n    event_type == \"totp\" and action in (VaultTotpActions), \"vault\",\n    event_type in (AdminTypes), \"admin\",\n    \"\")\n| extend EventTime = unixtime_seconds_todatetime(timestamp)\n| project-away is_legacy\n",
+        "functionParameters": "",
+        "version": 2,
+        "tags": [
+          {
+            "name": "description",
+            "value": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+      "apiVersion": "2022-01-01-preview",
+      "location": "[parameters('workspace-location')]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('Parser-', last(split(variables('parserObject1')._parserId1,'/'))))]",
+      "dependsOn": [
+        "[variables('parserObject1')._parserId1]"
+      ],
+      "properties": {
+        "parentId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspace'), 'NordPassActivities')]",
+        "contentId": "[variables('parserObject1').parserContentId1]",
+        "kind": "Parser",
+        "version": "[variables('parserObject1').parserVersion1]",
+        "source": {
+          "kind": "Solution",
+          "name": "NordPass",
+          "sourceId": "[variables('_solutionId')]"
+        },
+        "author": {
+          "name": "Nord Security Inc."
+        },
+        "support": {
+          "name": "NordPass",
+          "tier": "Partner",
+          "link": "https://support.nordpass.com/"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject1').analyticRuleTemplateSpecName1]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_domain_data_detected_in_breach_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject1').analyticRuleVersion1]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject1')._analyticRulecontentId1]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you when Data Breach Scanner discovers data related to your organization’s domains on the dark web.\n\n!This rule should be enabled only by the organizations that have set up Data Breach Scanner in NordPass.",
+                "displayName": "NordPass - Domain found in breach",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"breach\" and action == \"domain_breached\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT5M",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Exfiltration"
+                ],
+                "techniques": [
+                  "T1020"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject1').analyticRuleId1,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 1",
+                "parentId": "[variables('analyticRuleObject1').analyticRuleId1]",
+                "contentId": "[variables('analyticRuleObject1')._analyticRulecontentId1]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject1').analyticRuleVersion1]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject1')._analyticRulecontentId1]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Domain found in breach",
+        "contentProductId": "[variables('analyticRuleObject1')._analyticRulecontentProductId1]",
+        "id": "[variables('analyticRuleObject1')._analyticRulecontentProductId1]",
+        "version": "[variables('analyticRuleObject1').analyticRuleVersion1]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject2').analyticRuleTemplateSpecName2]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_Invite_declined_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject2').analyticRuleVersion2]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject2')._analyticRulecontentId2]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you when the user declines the invite to the NordPass organization.",
+                "displayName": "NordPass - Invitation declined",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"invites\" and action == \"user_invite_declined\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "severity": "Low",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "DefenseEvasion"
+                ],
+                "techniques": [
+                  "T1078"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject2').analyticRuleId2,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 2",
+                "parentId": "[variables('analyticRuleObject2').analyticRuleId2]",
+                "contentId": "[variables('analyticRuleObject2')._analyticRulecontentId2]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject2').analyticRuleVersion2]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject2')._analyticRulecontentId2]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Invitation declined",
+        "contentProductId": "[variables('analyticRuleObject2')._analyticRulecontentProductId2]",
+        "id": "[variables('analyticRuleObject2')._analyticRulecontentProductId2]",
+        "version": "[variables('analyticRuleObject2').analyticRuleVersion2]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject3').analyticRuleTemplateSpecName3]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_items_bulk_delete_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject3').analyticRuleVersion3]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject3')._analyticRulecontentId3]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you if a user deletes items in bulk, namely, more than 10 items or in the span of 10 minutes. \nIf a mix of bulk and one-off deletions were performed, this will group all actions and report the total number of items deleted.",
+                "displayName": "NordPass - Bulk item deletion",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"item_actions\" and action == \"items_deleted\"\n| extend item_count = array_length(todynamic(metadata).items)\n| summarize total_items = sum(item_count) by user_email\n| where total_items >= 10\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT10M",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Impact",
+                  "Collection"
+                ],
+                "techniques": [
+                  "T1485",
+                  "T1074"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "user_email",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "customDetails": {
+                  "ItemCount": "total_items",
+                  "User": "user_email"
+                },
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject3').analyticRuleId3,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 3",
+                "parentId": "[variables('analyticRuleObject3').analyticRuleId3]",
+                "contentId": "[variables('analyticRuleObject3')._analyticRulecontentId3]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject3').analyticRuleVersion3]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject3')._analyticRulecontentId3]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Bulk item deletion",
+        "contentProductId": "[variables('analyticRuleObject3')._analyticRulecontentProductId3]",
+        "id": "[variables('analyticRuleObject3')._analyticRulecontentProductId3]",
+        "version": "[variables('analyticRuleObject3').analyticRuleVersion3]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject4').analyticRuleTemplateSpecName4]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_items_reassignment_deletion_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject4').analyticRuleVersion4]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject4')._analyticRulecontentId4]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you if the deleted user's items have been removed without being transferred to another active user, as this could result in the loss of access to critical tools or information.",
+                "displayName": "NordPass - Unassigned items deleted",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"item_actions\" and action == \"item_reassignment_deleted\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT5M",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Impact"
+                ],
+                "techniques": [
+                  "T1485"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject4').analyticRuleId4,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 4",
+                "parentId": "[variables('analyticRuleObject4').analyticRuleId4]",
+                "contentId": "[variables('analyticRuleObject4')._analyticRulecontentId4]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject4').analyticRuleVersion4]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject4')._analyticRulecontentId4]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Unassigned items deleted",
+        "contentProductId": "[variables('analyticRuleObject4')._analyticRulecontentProductId4]",
+        "id": "[variables('analyticRuleObject4')._analyticRulecontentProductId4]",
+        "version": "[variables('analyticRuleObject4').analyticRuleVersion4]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject5').analyticRuleTemplateSpecName5]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_manual_user_manipulation_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject5').analyticRuleVersion5]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject5')._analyticRulecontentId5]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you when the user is manually invited, suspended, or deleted.\n\n!This rule should be enabled only by organizations that have User and Group Provisioning enabled.",
+                "displayName": "NordPass - Member status changed",
+                "enabled": false,
+                "query": "NordPassActivities\n| where (event_type == \"invites\" and action == \"user_invited\")\n    or (event_type == \"access\" and action == \"user_status_updated\")\n| extend Targets = coalesce(metadata.users, metadata.emails, pack_array(dynamic(null)))\n| mv-expand Target = Targets\n| extend\n    TargetEmail = coalesce(tostring(Target.email), tostring(Target), user_email),\n    TargetStatus = coalesce(tostring(Target.status), tostring(metadata.status))\n| where action == \"user_invited\" or TargetStatus in (\"suspended\", \"deleted\")\n| extend ActorEmail = user_email\n| project-away Targets, Target\n",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "severity": "Medium",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Persistence"
+                ],
+                "techniques": [
+                  "T1098"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject5').analyticRuleId5,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 5",
+                "parentId": "[variables('analyticRuleObject5').analyticRuleId5]",
+                "contentId": "[variables('analyticRuleObject5')._analyticRulecontentId5]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject5').analyticRuleVersion5]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject5')._analyticRulecontentId5]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Member status changed",
+        "contentProductId": "[variables('analyticRuleObject5')._analyticRulecontentProductId5]",
+        "id": "[variables('analyticRuleObject5')._analyticRulecontentProductId5]",
+        "version": "[variables('analyticRuleObject5').analyticRuleVersion5]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject6').analyticRuleTemplateSpecName6]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_token_revoked_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject6').analyticRuleVersion6]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject6')._analyticRulecontentId6]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you when the event reporting token is revoked, posing the risk of active integration being blocked.",
+                "displayName": "NordPass - Activity token revoked",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"integrations\" and action == \"activities_token_revoked\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT1H",
+                "queryPeriod": "PT1H",
+                "severity": "Medium",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "DefenseEvasion"
+                ],
+                "techniques": [
+                  "T1134"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject6').analyticRuleId6,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 6",
+                "parentId": "[variables('analyticRuleObject6').analyticRuleId6]",
+                "contentId": "[variables('analyticRuleObject6')._analyticRulecontentId6]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject6').analyticRuleVersion6]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject6')._analyticRulecontentId6]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Activity token revoked",
+        "contentProductId": "[variables('analyticRuleObject6')._analyticRulecontentProductId6]",
+        "id": "[variables('analyticRuleObject6')._analyticRulecontentProductId6]",
+        "version": "[variables('analyticRuleObject6').analyticRuleVersion6]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject7').analyticRuleTemplateSpecName7]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_user_data_detected_in_breach_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject7').analyticRuleVersion7]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject7')._analyticRulecontentId7]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you when Data Breach Scanner discovers data related to a member of your organization on the dark web.",
+                "displayName": "NordPass - Member data found in breach",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"breach\" and action == \"email_breached\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT5M",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Exfiltration"
+                ],
+                "techniques": [
+                  "T1020"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject7').analyticRuleId7,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 7",
+                "parentId": "[variables('analyticRuleObject7').analyticRuleId7]",
+                "contentId": "[variables('analyticRuleObject7')._analyticRulecontentId7]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject7').analyticRuleVersion7]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject7')._analyticRulecontentId7]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Member data found in breach",
+        "contentProductId": "[variables('analyticRuleObject7')._analyticRulecontentProductId7]",
+        "id": "[variables('analyticRuleObject7')._analyticRulecontentProductId7]",
+        "version": "[variables('analyticRuleObject7').analyticRuleVersion7]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject8').analyticRuleTemplateSpecName8]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_user_login_failed_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject8').analyticRuleVersion8]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject8')._analyticRulecontentId8]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you if a user fails to log in to their NordPass account or SSO authentication three or more times in the last 24 hours.",
+                "displayName": "NordPass - Repeated login failure",
+                "enabled": false,
+                "query": "let threshold = 2;\nlet filteredData = materialize(\n    NordPassActivities\n    | where event_type == \"login\" and action == \"user_login_failed\"\n);\nlet users = filteredData\n    | summarize Count = count() by user_email\n    | where Count > threshold\n    | project user_email;\nfilteredData  \n| where user_email in (users)\n| extend TargetEmail = user_email, IPAddress = ip_address, Provider = tostring(metadata.provider)\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "P1D",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 2,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "CredentialAccess"
+                ],
+                "subTechniques": [
+                  "T1556.003"
+                ],
+                "techniques": [
+                  "T1110",
+                  "T1556"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  },
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "IPAddress",
+                        "identifier": "Address"
+                      }
+                    ],
+                    "entityType": "IP"
+                  }
+                ],
+                "customDetails": {
+                  "Provider": "Provider"
+                },
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject8').analyticRuleId8,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 8",
+                "parentId": "[variables('analyticRuleObject8').analyticRuleId8]",
+                "contentId": "[variables('analyticRuleObject8')._analyticRulecontentId8]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject8').analyticRuleVersion8]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject8')._analyticRulecontentId8]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Repeated login failure",
+        "contentProductId": "[variables('analyticRuleObject8')._analyticRulecontentProductId8]",
+        "id": "[variables('analyticRuleObject8')._analyticRulecontentProductId8]",
+        "version": "[variables('analyticRuleObject8').analyticRuleVersion8]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentTemplates",
+      "apiVersion": "2023-04-01-preview",
+      "name": "[variables('analyticRuleObject9').analyticRuleTemplateSpecName9]",
+      "location": "[parameters('workspace-location')]",
+      "dependsOn": [
+        "[extensionResourceId(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspace')), 'Microsoft.SecurityInsights/contentPackages', variables('_solutionId'))]"
+      ],
+      "properties": {
+        "description": "nordpass_vault_exported_AnalyticalRules Analytics Rule with template version 3.1.0",
+        "mainTemplate": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "[variables('analyticRuleObject9').analyticRuleVersion9]",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "type": "Microsoft.SecurityInsights/AlertRuleTemplates",
+              "name": "[variables('analyticRuleObject9')._analyticRulecontentId9]",
+              "apiVersion": "2023-02-01-preview",
+              "kind": "Scheduled",
+              "location": "[parameters('workspace-location')]",
+              "properties": {
+                "description": "This will alert you if the vault has been exported, allowing you to review and evaluate the incident to mitigate potential risks.\nNOTE: The organization can control whether it allows its members to export the vault, although we recommend that it always be disabled.",
+                "displayName": "NordPass - Vault exported",
+                "enabled": false,
+                "query": "NordPassActivities\n| where event_type == \"item_actions\" and action == \"vault_exported\"\n| extend TargetEmail = user_email\n",
+                "queryFrequency": "PT5M",
+                "queryPeriod": "PT5M",
+                "severity": "High",
+                "suppressionDuration": "PT1H",
+                "suppressionEnabled": false,
+                "triggerOperator": "GreaterThan",
+                "triggerThreshold": 0,
+                "status": "Available",
+                "requiredDataConnectors": [
+                  {
+                    "dataTypes": [
+                      "NordPassEventLogs_CL"
+                    ],
+                    "connectorId": "NordPass"
+                  }
+                ],
+                "tactics": [
+                  "Exfiltration"
+                ],
+                "techniques": [
+                  "T1020"
+                ],
+                "entityMappings": [
+                  {
+                    "fieldMappings": [
+                      {
+                        "columnName": "TargetEmail",
+                        "identifier": "MailboxPrimaryAddress"
+                      }
+                    ],
+                    "entityType": "Mailbox"
+                  }
+                ],
+                "incidentConfiguration": {
+                  "createIncident": false
+                }
+              }
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces/providers/metadata",
+              "apiVersion": "2022-01-01-preview",
+              "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',concat('AnalyticsRule-', last(split(variables('analyticRuleObject9').analyticRuleId9,'/'))))]",
+              "properties": {
+                "description": "NordPass Analytics Rule 9",
+                "parentId": "[variables('analyticRuleObject9').analyticRuleId9]",
+                "contentId": "[variables('analyticRuleObject9')._analyticRulecontentId9]",
+                "kind": "AnalyticsRule",
+                "version": "[variables('analyticRuleObject9').analyticRuleVersion9]",
+                "source": {
+                  "kind": "Solution",
+                  "name": "NordPass",
+                  "sourceId": "[variables('_solutionId')]"
+                },
+                "author": {
+                  "name": "Nord Security Inc."
+                },
+                "support": {
+                  "name": "NordPass",
+                  "tier": "Partner",
+                  "link": "https://support.nordpass.com/"
+                }
+              }
+            }
+          ]
+        },
+        "packageKind": "Solution",
+        "packageVersion": "[variables('_solutionVersion')]",
+        "packageName": "[variables('_solutionName')]",
+        "packageId": "[variables('_solutionId')]",
+        "contentSchemaVersion": "3.0.0",
+        "contentId": "[variables('analyticRuleObject9')._analyticRulecontentId9]",
+        "contentKind": "AnalyticsRule",
+        "displayName": "NordPass - Vault exported",
+        "contentProductId": "[variables('analyticRuleObject9')._analyticRulecontentProductId9]",
+        "id": "[variables('analyticRuleObject9')._analyticRulecontentProductId9]",
+        "version": "[variables('analyticRuleObject9').analyticRuleVersion9]"
+      }
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces/providers/contentPackages",
+      "apiVersion": "2023-04-01-preview",
+      "location": "[parameters('workspace-location')]",
+      "properties": {
+        "version": "3.1.0",
+        "kind": "Solution",
+        "contentSchemaVersion": "3.0.0",
+        "displayName": "NordPass",
+        "publisherDisplayName": "NordPass",
+        "descriptionHtml": "<p><strong>Note:</strong> Please refer to the following before installing the solution:</p>\n<p>• Review the solution <a href=\"https://github.com/Azure/Azure-Sentinel/tree/master/Solutions/NordPass/ReleaseNotes.md\">Release Notes</a></p>\n<p>• There may be <a href=\"https://aka.ms/sentinelsolutionsknownissues\">known issues</a> pertaining to this Solution, please refer to them before installing.</p>\n<p>NordPass for Microsoft Sentinel enables you to automatically transfer Activity Log data from NordPass to Microsoft Sentinel and get real-time insights such as item activity, all login attempts, and security notifications. This allows you to stay informed by setting any needed alerts by your organization to monitor these security events.</p>\n<p><strong>Data Connectors:</strong> 1, <strong>Parsers:</strong> 1, <strong>Analytic Rules:</strong> 9</p>\n<p><a href=\"https://aka.ms/azuresentinel\">Learn more about Microsoft Sentinel</a> | <a href=\"https://aka.ms/azuresentinelsolutionsdoc\">Learn more about Solutions</a></p>\n",
+        "contentKind": "Solution",
+        "contentProductId": "[variables('_solutioncontentProductId')]",
+        "id": "[variables('_solutioncontentProductId')]",
+        "icon": "<img src=\"https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Logos/NordPass.svg\" width=\"75px\" height=\"75px\">",
+        "contentId": "[variables('_solutionId')]",
+        "parentId": "[variables('_solutionId')]",
+        "source": {
+          "kind": "Solution",
+          "name": "NordPass",
+          "sourceId": "[variables('_solutionId')]"
+        },
+        "author": {
+          "name": "Nord Security Inc."
+        },
+        "support": {
+          "name": "NordPass",
+          "tier": "Partner",
+          "link": "https://support.nordpass.com/"
+        },
+        "dependencies": {
+          "operator": "AND",
+          "criteria": [
+            {
+              "kind": "DataConnector",
+              "contentId": "[variables('_dataConnectorContentId1')]",
+              "version": "[variables('dataConnectorVersion1')]"
+            },
+            {
+              "kind": "Parser",
+              "contentId": "[variables('parserObject1').parserContentId1]",
+              "version": "[variables('parserObject1').parserVersion1]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject1')._analyticRulecontentId1]",
+              "version": "[variables('analyticRuleObject1').analyticRuleVersion1]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject2')._analyticRulecontentId2]",
+              "version": "[variables('analyticRuleObject2').analyticRuleVersion2]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject3')._analyticRulecontentId3]",
+              "version": "[variables('analyticRuleObject3').analyticRuleVersion3]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject4')._analyticRulecontentId4]",
+              "version": "[variables('analyticRuleObject4').analyticRuleVersion4]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject5')._analyticRulecontentId5]",
+              "version": "[variables('analyticRuleObject5').analyticRuleVersion5]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject6')._analyticRulecontentId6]",
+              "version": "[variables('analyticRuleObject6').analyticRuleVersion6]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject7')._analyticRulecontentId7]",
+              "version": "[variables('analyticRuleObject7').analyticRuleVersion7]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject8')._analyticRulecontentId8]",
+              "version": "[variables('analyticRuleObject8').analyticRuleVersion8]"
+            },
+            {
+              "kind": "AnalyticsRule",
+              "contentId": "[variables('analyticRuleObject9')._analyticRulecontentId9]",
+              "version": "[variables('analyticRuleObject9').analyticRuleVersion9]"
+            }
+          ]
+        },
+        "firstPublishDate": "2025-04-01",
+        "providers": [
+          "NordPass"
+        ],
+        "categories": {
+          "domains": [
+            "Security - Others",
+            "Identity"
+          ]
+        }
+      },
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/', variables('_solutionId'))]"
+    }
+  ],
+  "outputs": {}
+}
